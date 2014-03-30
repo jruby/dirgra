@@ -1,0 +1,6 @@
+target
+/.settings/
+/examples/.redcar/
+/.redcar/
+*~
+.idea
