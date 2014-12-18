@@ -1,6 +1,8 @@
 package org.jruby.dirgra;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -12,10 +14,13 @@ import java.util.Set;
  *
  */
 public class Vertex<T> implements Comparable<Vertex<T>> {
+    private static final Edge[] EMPTY_EDGE_LIST = new Edge[0];
     private DirectedGraph graph;
     private T data;
-    private Set<Edge<T>> incoming = null;
-    private Set<Edge<T>> outgoing = null;
+    private Edge<T>[] incoming = EMPTY_EDGE_LIST;
+    private int incomingLength = 0;
+    private Edge<T>[] outgoing = EMPTY_EDGE_LIST;
+    private int outgoingLength = 0;
     int id;
 
     public Vertex(DirectedGraph graph, T data, int id) {
@@ -29,10 +34,9 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
     }
 
     public void addEdgeTo(Vertex destination, Object type) {
-        Edge edge = new Edge<T>(this, destination, type);
-        getOutgoingEdges().add(edge);
-        destination.getIncomingEdges().add(edge);
-        graph.edges().add(edge);
+        Edge<T> newEdge = graph.addEdge(new Edge<T>(this, destination, type));
+        addOutgoingEdge(newEdge);
+        destination.addIncomingEdge(newEdge);
     }
 
     public void addEdgeTo(T destination) {
@@ -46,17 +50,10 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
     }
 
     public boolean removeEdgeTo(Vertex destination) {
-        for (Edge edge: getOutgoingEdges()) {
+        for (int i = 0; i < outgoingLength; i++) {
+            Edge edge = outgoing[i];
             if (edge.getDestination() == destination) {
-                getOutgoingEdges().remove(edge);
-                edge.getDestination().getIncomingEdges().remove(edge);
-                graph.edges().remove(edge);
-                if(outDegree() == 0) {
-                    outgoing = null;
-                }
-                if(destination.inDegree() == 0) {
-                    destination.incoming = null;
-                }
+                graph.removeEdge(edge); // This will remove incoming/outgoing as side-effect.
                 return true;
             }
         }
@@ -64,20 +61,80 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
         return false;
     }
 
-    public void removeAllIncomingEdges() {
-        for (Edge edge: getIncomingEdges()) {
-            edge.getSource().getOutgoingEdges().remove(edge);
-            graph.edges().remove(edge);
+    protected void addOutgoingEdge(Edge<T> newEdge) {
+        for (int i = 0; i < outgoingLength; i++) {
+            // Edge already added.  No repeated edge support.
+            if (outgoing[i].equals(newEdge)) return;
         }
-        incoming = null;
+
+        if (outgoingLength >= outgoing.length) outgoing = graph.growEdges(outgoing, outgoingLength);
+
+        outgoing[outgoingLength++] = newEdge;
+    }
+
+    protected void addIncomingEdge(Edge<T> newEdge) {
+        for (int i = 0; i < incomingLength; i++) {
+            // Edge already added.  No repeated edge support.
+            if (incoming[i] == newEdge) return;
+        }
+
+        if (incomingLength >= incoming.length) incoming = graph.growEdges(incoming, incomingLength);
+
+        incoming[incomingLength++] = newEdge;
+    }
+
+    protected void removeOutgoingEdge(Edge<T> edge) {
+        int splitIndex = -1; // which index we found the edge at
+
+        for (int i = 0; i < outgoingLength; i++) {
+            if (outgoing[i].equals(edge)) {
+                splitIndex = i;
+                break;
+            }
+        }
+
+        if (splitIndex == -1) return;           // no edge found
+
+        if (splitIndex != outgoingLength-1) {   // need to shift over all elements one
+            System.arraycopy(outgoing, splitIndex + 1, outgoing, splitIndex, outgoingLength - 1 - splitIndex);
+        }
+        outgoing[outgoingLength-1] = null;      // we made list one smaller null last element so it does not leak.
+        outgoingLength--;                       // list is one smaller
+    }
+
+    protected void removeIncomingEdge(Edge<T> edge) {
+        int splitIndex = -1; // which index we found the edge at
+
+        for (int i = 0; i < incomingLength; i++) {
+            if (incoming[i].equals(edge)) {
+                splitIndex = i;
+                break;
+            }
+        }
+
+        if (splitIndex == -1) return;           // no edge found
+
+        if (splitIndex != incomingLength-1) {   // need to shift over all elements one
+            System.arraycopy(incoming, splitIndex + 1, incoming, splitIndex, incomingLength - 1 - splitIndex);
+        }
+        incoming[incomingLength-1] = null;      // we made list one smaller null last element so it does not leak.
+        incomingLength--;                       // list is one smaller
+    }
+
+    public void removeAllIncomingEdges() {
+        while (incomingLength > 0) {       // Each removal will decrement length until none are left
+            graph.removeEdge(incoming[0]); // This will remove incoming/outgoing as side-effect.
+        }
+
+        incoming = EMPTY_EDGE_LIST;
     }
 
     public void removeAllOutgoingEdges() {
-        for (Edge edge: getOutgoingEdges()) {
-            edge.getDestination().getIncomingEdges().remove(edge);
-            graph.edges().remove(edge);
+        while (outgoingLength > 0) {       // Each removal will decrement length until none are left
+            graph.removeEdge(outgoing[0]); // This will remove incoming/outgoing as side-effect.
         }
-        outgoing = null;
+
+        outgoing = EMPTY_EDGE_LIST;
     }
 
     public void removeAllEdges() {
@@ -86,11 +143,11 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
     }
 
     public int inDegree() {
-        return (incoming == null) ? 0 : incoming.size();
+        return incomingLength;
     }
 
     public int outDegree() {
-        return (outgoing == null) ? 0 : outgoing.size();
+        return outgoingLength;
     }
 
     public Iterable<Edge<T>> getIncomingEdgesOfType(Object type) {
@@ -177,16 +234,12 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
         return getFirstEdge(getOutgoingEdgesNotOfType(null).iterator());
     }
 
-    public Set<Edge<T>> getIncomingEdges() {
-        if (incoming == null) incoming = new HashSet<Edge<T>>();
-
-        return incoming;
+    public Collection<Edge<T>> getIncomingEdges() {
+        return Arrays.asList(Arrays.copyOf(incoming, incomingLength));
     }
 
-    public Set<Edge<T>> getOutgoingEdges() {
-        if (outgoing == null) outgoing = new HashSet<Edge<T>>();
-
-        return outgoing;
+    public Collection<Edge<T>> getOutgoingEdges() {
+        return Arrays.asList(Arrays.copyOf(outgoing, outgoingLength));
     }
 
     public T getData() {
@@ -205,7 +258,7 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
 
         buf.append(":");
 
-        Set<Edge<T>> edges = getOutgoingEdges();
+        Collection<Edge<T>> edges = getOutgoingEdges();
         int size = edges.size();
 
         if (size > 0) {

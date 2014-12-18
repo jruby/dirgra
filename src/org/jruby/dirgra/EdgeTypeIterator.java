@@ -1,5 +1,6 @@
 package org.jruby.dirgra;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -10,7 +11,7 @@ public class EdgeTypeIterator<T> implements Iterator<Edge<T>> {
     private Edge nextEdge = null;
     private boolean negate;
 
-    public EdgeTypeIterator(Set<Edge<T>> edges, Object type, boolean negate) {
+    public EdgeTypeIterator(Collection<Edge<T>> edges, Object type, boolean negate) {
         this.internalIterator = edges.iterator();
         this.type = type;
         this.negate = negate;

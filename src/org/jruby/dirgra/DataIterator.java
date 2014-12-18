@@ -1,5 +1,6 @@
 package org.jruby.dirgra;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -11,7 +12,7 @@ public class DataIterator<T> implements Iterator<T> {
     private boolean source;
     private boolean negate;
 
-    public DataIterator(Set<Edge<T>> edges, Object type, boolean source, boolean negate) {
+    public DataIterator(Collection<Edge<T>> edges, Object type, boolean source, boolean negate) {
         this.internalIterator = edges.iterator();
         this.type = type;
         this.source = source;
