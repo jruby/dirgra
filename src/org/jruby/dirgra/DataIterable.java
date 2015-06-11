@@ -5,13 +5,15 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class DataIterable<T> implements Iterable<T> {
-    private Collection<Edge<T>> edges;
+    private Edge<T>[] edges;
+    private int edgesLength;
     private Object type;
     private boolean negate;
     private boolean source;
 
-    public DataIterable(Collection<Edge<T>> edges, Object type, boolean source, boolean negate) {
+    public DataIterable(Edge<T>[] edges, int edgesLength, Object type, boolean source, boolean negate) {
         this.edges = edges;
+        this.edgesLength = edgesLength;
         this.type = type;
         this.negate = negate;
         this.source = source;
@@ -19,6 +21,6 @@ public class DataIterable<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new DataIterator<T>(edges, type, source, negate);
+        return new DataIterator<T>(edges, edgesLength, type, source, negate);
     }
 }

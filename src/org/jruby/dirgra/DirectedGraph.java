@@ -73,7 +73,7 @@ public class DirectedGraph<T> {
     }
 
     public Iterable<Edge<T>> edgesOfType(Object type) {
-        return new EdgeTypeIterable<T>(edges(), type);
+        return new EdgeTypeIterable<T>(edges, edgeLength, type);
     }
 
     public Collection<T> allData() {

@@ -5,7 +5,7 @@
   <groupId>org.jruby</groupId>
   <artifactId>dirgra</artifactId>
   <packaging>jar</packaging>
-  <version>0.2</version>
+  <version>0.3</version>
   <name>Dirgra</name>
   <url>https://github.com/jruby/dirgra</url>
   <description>Simple Directed Graph</description>
@@ -89,8 +89,8 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>

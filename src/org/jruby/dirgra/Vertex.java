@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -151,15 +149,15 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
     }
 
     public Iterable<Edge<T>> getIncomingEdgesOfType(Object type) {
-        return new EdgeTypeIterable<T>(getIncomingEdges(), type);
+        return new EdgeTypeIterable<T>(incoming, incomingLength, type);
     }
 
     public Iterable<Edge<T>> getIncomingEdgesNotOfType(Object type) {
-        return new EdgeTypeIterable<T>(getIncomingEdges(), type, true);
+        return new EdgeTypeIterable<T>(incoming, incomingLength, type, true);
     }
 
     public Iterable<Edge<T>> getOutgoingEdgesOfType(Object type) {
-        return new EdgeTypeIterable<T>(getOutgoingEdges(), type);
+        return new EdgeTypeIterable<T>(outgoing, outgoingLength, type);
     }
 
     public T getIncomingSourceData() {
@@ -175,31 +173,31 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
     }
 
     public Iterable<T> getIncomingSourcesData() {
-        return new DataIterable<T>(getIncomingEdges(), null, true, true);
+        return new DataIterable<T>(incoming, incomingLength, null, true, true);
     }
 
     public Iterable<T> getIncomingSourcesDataOfType(Object type) {
-        return new DataIterable<T>(getIncomingEdges(), type, true, false);
+        return new DataIterable<T>(incoming, incomingLength, type, true, false);
     }
 
     public Iterable<T> getIncomingSourcesDataNotOfType(Object type) {
-        return new DataIterable<T>(getIncomingEdges(), type, true, true);
+        return new DataIterable<T>(incoming, incomingLength, type, true, true);
     }
 
     public Iterable<Edge<T>> getOutgoingEdgesNotOfType(Object type) {
-        return new EdgeTypeIterable<T>(getOutgoingEdges(), type, true);
+        return new EdgeTypeIterable<T>(outgoing, outgoingLength, type, true);
     }
 
     public Iterable<T> getOutgoingDestinationsData() {
-        return new DataIterable<T>(getOutgoingEdges(), null, false, true);
+        return new DataIterable<T>(outgoing, outgoingLength, null, false, true);
     }
 
     public Iterable<T> getOutgoingDestinationsDataOfType(Object type) {
-        return new DataIterable<T>(getOutgoingEdges(), type, false, false);
+        return new DataIterable<T>(outgoing, outgoingLength, type, false, false);
     }
 
     public Iterable<T> getOutgoingDestinationsDataNotOfType(Object type) {
-        return new DataIterable<T>(getOutgoingEdges(), type, false, true);
+        return new DataIterable<T>(outgoing, outgoingLength, type, false, true);
     }
 
     public T getOutgoingDestinationData() {

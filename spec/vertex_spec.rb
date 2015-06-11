@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + "/helpers"
 
-require 'dirgra-0.2-SNAPSHOT.jar'
+require 'dirgra-0.3.jar'
 require 'vertex_helpers'
 require 'edge_helpers'
 

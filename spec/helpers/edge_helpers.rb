@@ -1,6 +1,6 @@
 require 'java'
 
-require 'dirgra-0.2-SNAPSHOT.jar'
+require 'dirgra-0.3.jar'
 
 import 'org.jruby.dirgra.Edge'
 

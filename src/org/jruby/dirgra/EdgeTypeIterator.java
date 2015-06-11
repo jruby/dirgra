@@ -6,13 +6,16 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class EdgeTypeIterator<T> implements Iterator<Edge<T>> {
-    private Iterator<Edge<T>> internalIterator;
+    private Edge<T>[] edges;
+    private int edgesLength;
+    private int edgeIteratorIndex = 0;
     private Object type;
     private Edge nextEdge = null;
     private boolean negate;
 
-    public EdgeTypeIterator(Collection<Edge<T>> edges, Object type, boolean negate) {
-        this.internalIterator = edges.iterator();
+    public EdgeTypeIterator(Edge<T>[] edges, int edgesLength, Object type, boolean negate) {
+        this.edges = edges;
+        this.edgesLength = edgesLength;
         this.type = type;
         this.negate = negate;
     }
@@ -22,22 +25,25 @@ public class EdgeTypeIterator<T> implements Iterator<Edge<T>> {
         // Multiple hasNext calls with no next...hasNext still true
         if (nextEdge != null) return true;
 
-        while (internalIterator.hasNext()) {
-            Edge edge = internalIterator.next();
+        for (int i = edgeIteratorIndex; i < edgesLength; i++) {
+            Edge edge = edges[i];
             Object edgeType = edge.getType();
 
             if (negate) {
                 // When edgeType or type is null compare them directly. Otherwise compare them using equals
                 if ((edgeType != null && !edgeType.equals(type)) || (edgeType == null && edgeType != type)) {
                     nextEdge = edge;
+                    edgeIteratorIndex = i + 1;
                     return true;
                 }
                 // When edgeType or type is null compare them directly. Otherwise compare them using equals
             } else if ((edgeType != null && edgeType.equals(type)) || (edgeType == null && edgeType == type)) {
                 nextEdge = edge;
+                edgeIteratorIndex = i + 1;
                 return true;
             }
         }
+        edgeIteratorIndex = edgesLength;
         return false;
     }
 
