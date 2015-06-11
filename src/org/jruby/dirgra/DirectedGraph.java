@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DirectedGraph<T> {
+public class DirectedGraph<T extends ExplicitVertexID> {
     private static int INITIAL_SIZE = 4;
 
     private Map<T, Vertex<T>> vertices = new HashMap<T, Vertex<T>>();

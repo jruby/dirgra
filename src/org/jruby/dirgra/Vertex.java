@@ -11,7 +11,7 @@ import java.util.List;
 /**
  *
  */
-public class Vertex<T> implements Comparable<Vertex<T>> {
+public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>> {
     private static final Edge[] EMPTY_EDGE_LIST = new Edge[0];
     private DirectedGraph graph;
     private T data;
@@ -245,7 +245,7 @@ public class Vertex<T> implements Comparable<Vertex<T>> {
     }
 
     public int getID() {
-        return data instanceof ExplicitVertexID ? ((ExplicitVertexID) data).getID() : id;
+        return data.getID();
     }
 
     // FIXME: This is pretty ugly...creating massive number of comparators

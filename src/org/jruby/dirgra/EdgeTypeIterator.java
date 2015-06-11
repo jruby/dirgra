@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class EdgeTypeIterator<T> implements Iterator<Edge<T>> {
+public class EdgeTypeIterator<T extends ExplicitVertexID> implements Iterator<Edge<T>> {
     private Edge<T>[] edges;
     private int edgesLength;
     private int edgeIteratorIndex = 0;

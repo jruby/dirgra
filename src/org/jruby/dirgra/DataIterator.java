@@ -3,7 +3,7 @@ package org.jruby.dirgra;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class DataIterator<T> implements Iterator<T> {
+public class DataIterator<T extends ExplicitVertexID> implements Iterator<T> {
     private Edge<T>[] edges;
     private int edgesLength;
     private int edgeIteratorIndex;

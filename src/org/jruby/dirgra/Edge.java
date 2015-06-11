@@ -1,6 +1,6 @@
 package org.jruby.dirgra;
 
-public class Edge<T> {
+public class Edge<T extends ExplicitVertexID> {
     private Vertex<T> source;
     private Vertex<T> destination;
     private Object type;

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DataIterable<T> implements Iterable<T> {
+public class DataIterable<T extends ExplicitVertexID> implements Iterable<T> {
     private Edge<T>[] edges;
     private int edgesLength;
     private Object type;
