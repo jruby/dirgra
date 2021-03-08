@@ -16,11 +16,6 @@
     <version>7</version>
   </parent>
 
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/JRUBY</url>
-  </issueManagement>
-
   <scm>
     <connection>scm:git:git://github.com/jruby/dirgra.git</connection>
     <developerConnection>scm:git:git://github.com/jruby/dirgra.git</developerConnection>
@@ -87,11 +82,39 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
+        <version>3.7.0</version>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <includes>
+                <include>module-info.java</include>
+              </includes>
+              <release>9</release>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-testCompile</id>
+            <configuration>
+              <release>9</release>
+            </configuration>
+          </execution>
+          <execution>
+            <id>base-compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <source>8</source>
+              <target>8</target>
+              <excludes>
+                <exclude>module-info.java</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
