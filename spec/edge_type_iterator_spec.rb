@@ -3,6 +3,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + "/helpers"
 require 'dirgra-0.3.jar'
 
 require 'edge_helpers'
+require 'vertex_id_helper'
 
 import 'org.jruby.dirgra.DirectedGraph'
 import 'org.jruby.dirgra.EdgeTypeIterator'
@@ -10,10 +11,16 @@ import 'java.util.NoSuchElementException'
 
 describe "EdgeTypeIterable" do
 
+  let(:graph) { DirectedGraph.new }
+  let(:one) { VertexID.new(1) }
+  let(:two) { VertexID.new(2) }
+  let(:three) { VertexID.new(3) }
+  let(:four) { VertexID.new(4) }
+
   before do
-    @graph = DirectedGraph.new
-    @graph.addEdge(1, 2, "foo")
-    @graph.addEdge(2, 3, "foo")
+    @edge_count = 0
+    add_edge(one, two, "foo")
+    add_edge(two, three, "foo")
   end
 
   describe "hasNext" do
@@ -21,12 +28,12 @@ describe "EdgeTypeIterable" do
     context "edges of given type" do
 
       it "returns true if the iterator contains an edge of given type" do
-        iterator = EdgeTypeIterator.new(@graph.edges(), "foo", false)
+        iterator = EdgeTypeIterator.new(*edges, "foo", false)
         expect(iterator.hasNext).to eq true
       end
 
       it "returns false if the iterator does not contain any edge of given type" do
-        iterator = EdgeTypeIterator.new(@graph.edges(), "bar", false)
+        iterator = EdgeTypeIterator.new(*edges, "bar", false)
         expect(iterator.hasNext).to eq false
       end
 
@@ -35,12 +42,12 @@ describe "EdgeTypeIterable" do
     context "edges not of given type" do
 
       it "returns true if the iterator contains an edge not of given type" do
-        iterator = EdgeTypeIterator.new(@graph.edges(), "bar", true)
+        iterator = EdgeTypeIterator.new(*edges, "bar", true)
         expect(iterator.hasNext).to eq true
       end
 
       it "returns false if the iterator contains an edge of given type" do
-        iterator = EdgeTypeIterator.new(@graph.edges(), "foo", true)
+        iterator = EdgeTypeIterator.new(*edges, "foo", true)
         expect(iterator.hasNext).to eq false
       end
 
@@ -52,13 +59,13 @@ describe "EdgeTypeIterable" do
 
         it "returns true if the iterator contains an edge of type nil" do
           # add an edge of type nil
-          @graph.addEdge(4,1,nil)
-          iterator = EdgeTypeIterator.new(@graph.edges(), nil, false)
+          add_edge(four,one,nil)
+          iterator = EdgeTypeIterator.new(*edges, nil, false)
           expect(iterator.hasNext).to eq true
         end
 
         it "returns false if the iterator does not contain any edge of type nil" do
-          iterator = EdgeTypeIterator.new(@graph.edges(), nil, false)
+          iterator = EdgeTypeIterator.new(*edges, nil, false)
           expect(iterator.hasNext).to eq false
         end
 
@@ -67,17 +74,17 @@ describe "EdgeTypeIterable" do
       context "edges not of given type" do
 
         it "returns true if the iterator contains an edge not of type nil" do
-          iterator = EdgeTypeIterator.new(@graph.edges(), nil, true)
+          iterator = EdgeTypeIterator.new(*edges, nil, true)
           expect(iterator.hasNext).to eq true
         end
 
         it "returns false if the iterator contains all edges of type nil" do
           # remove existing edges not of type nil
-          @graph.removeEdge(1,2)
-          @graph.removeEdge(2,3)
+          remove_edge(one,two)
+          remove_edge(two,three)
           # add an edge of type nil
-          @graph.addEdge(4,1,nil)
-          iterator = EdgeTypeIterator.new(@graph.edges(), nil, true)
+          add_edge(four,one,nil)
+          iterator = EdgeTypeIterator.new(*edges, nil, true)
           expect(iterator.hasNext).to eq false
         end
 
@@ -89,16 +96,16 @@ describe "EdgeTypeIterable" do
 
       it "returns true if the iterator contains an edge not of type nil" do
         # remove existing edges not of type nil
-        @graph.removeEdge(1,2)
-        @graph.removeEdge(2,3)
+        remove_edge(one,two)
+        remove_edge(two,three)
         # add an edge of type nil
-        @graph.addEdge(4,1,nil)
-        iterator = EdgeTypeIterator.new(@graph.edges(), "foo", true)
+        add_edge(four,one,nil)
+        iterator = EdgeTypeIterator.new(*edges, "foo", true)
         expect(iterator.hasNext).to eq true
       end
 
       it "returns false if the iterator contains all edges not of type nil" do
-        iterator = EdgeTypeIterator.new(@graph.edges(), "foo", true)
+        iterator = EdgeTypeIterator.new(*edges, "foo", true)
         expect(iterator.hasNext).to eq false
       end
     end
@@ -110,7 +117,7 @@ describe "EdgeTypeIterable" do
     context "when the iterator has next edge" do
 
       it "returns the next edge" do
-        iterator = EdgeTypeIterator.new(@graph.edges(), "foo", false)
+        iterator = EdgeTypeIterator.new(*edges, "foo", false)
         expect(iterator.next).to have_type("foo")
       end
     end
@@ -118,7 +125,7 @@ describe "EdgeTypeIterable" do
     context "when the iterator does not have next edge" do
       it "throws NoSuchElementException" do
         empty_graph = DirectedGraph.new
-        iterator = EdgeTypeIterator.new(empty_graph.edges(), "foo", false)
+        iterator = EdgeTypeIterator.new(empty_graph.edges().to_array(), 0, "foo", false)
         expect { iterator.next }.to raise_error NoSuchElementException
       end
     end
@@ -127,7 +134,7 @@ describe "EdgeTypeIterable" do
   describe "remove" do
 
     it "throws UnsupportedOperationException exception" do
-      iterator = EdgeTypeIterator.new(@graph.edges(), "foo", false)
+      iterator = EdgeTypeIterator.new(*edges, "foo", false)
       expect { iterator.remove }.to raise_error Java::JavaLang::UnsupportedOperationException
     end
   end

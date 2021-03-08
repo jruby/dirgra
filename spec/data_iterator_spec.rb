@@ -3,12 +3,19 @@ import 'org.jruby.dirgra.DirectedGraph'
 import 'org.jruby.dirgra.DataIterator'
 import 'java.util.NoSuchElementException'
 
+require 'vertex_id_helper'
+
 describe "DataIterator" do
+  let(:graph) { DirectedGraph.new }
+  let(:one) { VertexID.new(1) }
+  let(:two) { VertexID.new(2) }
+  let(:three) { VertexID.new(3) }
+  let(:four) { VertexID.new(4) }
 
   before do
-    @graph = DirectedGraph.new
-    @graph.addEdge(1, 2, "foo")
-    @graph.addEdge(2, 3, "foo")
+    @edge_count = 0
+    add_edge(one, two, "foo")
+    add_edge(two, three, "foo")
   end
 
   # hasNext method doesn't use the source or destination of iterator at all
@@ -18,12 +25,12 @@ describe "DataIterator" do
     context "edges of given type" do
 
       it "returns true if the iterator contains an edge of given type" do
-        iterator = DataIterator.new(@graph.edges(), "foo", true, false)
+        iterator = DataIterator.new(*edges, "foo", true, false)
         expect(iterator.hasNext).to eq true
       end
 
       it "returns false if the iterator does not contain any edge of given type" do
-        iterator = DataIterator.new(@graph.edges(), "bar", true, false)
+        iterator = DataIterator.new(*edges, "bar", true, false)
         expect(iterator.hasNext).to eq false
       end
 
@@ -32,12 +39,12 @@ describe "DataIterator" do
     context "edges not of given type" do
 
       it "returns true if the iterator contains an edge not of given type" do
-        iterator = DataIterator.new(@graph.edges(), "bar", true, true)
+        iterator = DataIterator.new(*edges, "bar", true, true)
         expect(iterator.hasNext).to eq true
       end
 
       it "returns false if the iterator contains an edge of given type" do
-        iterator = DataIterator.new(@graph.edges(), "foo", true, true)
+        iterator = DataIterator.new(*edges, "foo", true, true)
         expect(iterator.hasNext).to eq false
       end
 
@@ -49,13 +56,13 @@ describe "DataIterator" do
 
         it "returns true if the iterator contains an edge of type nil" do
           # add an edge of type nil
-          @graph.addEdge(4,1,nil)
-          iterator = DataIterator.new(@graph.edges(), nil, true, false)
+          add_edge(four,one,nil)
+          iterator = DataIterator.new(*edges, nil, true, false)
           expect(iterator.hasNext).to eq true
         end
 
         it "returns false if the iterator does not contain any edge of type nil" do
-          iterator = DataIterator.new(@graph.edges(), nil, true, false)
+          iterator = DataIterator.new(*edges, nil, true, false)
           expect(iterator.hasNext).to eq false
         end
 
@@ -64,17 +71,17 @@ describe "DataIterator" do
       context "edges not of given type" do
 
         it "returns true if the iterator contains an edge not of type nil" do
-          iterator = DataIterator.new(@graph.edges(), nil, true, true)
+          iterator = DataIterator.new(*edges, nil, true, true)
           expect(iterator.hasNext).to eq true
         end
 
         it "returns false if the iterator contains all edges of type nil" do
           # remove existing edges not of type nil
-          @graph.removeEdge(1,2)
-          @graph.removeEdge(2,3)
+          remove_edge(one,two)
+          remove_edge(two,three)
           # add an edge of type nil
-          @graph.addEdge(4,1,nil)
-          iterator = DataIterator.new(@graph.edges(), nil, true, true)
+          add_edge(four,one,nil)
+          iterator = DataIterator.new(*edges, nil, true, true)
           expect(iterator.hasNext).to eq false
         end
 
@@ -86,16 +93,16 @@ describe "DataIterator" do
 
       it "returns true if the iterator contains an edge not of type nil" do
         # remove existing edges not of type nil
-        @graph.removeEdge(1,2)
-        @graph.removeEdge(2,3)
+        remove_edge(one,two)
+        remove_edge(two,three)
         # add an edge of type nil
-        @graph.addEdge(4,1,nil)
-        iterator = DataIterator.new(@graph.edges(), "foo", true, true)
+        add_edge(four,one,nil)
+        iterator = DataIterator.new(*edges, "foo", true, true)
         expect(iterator.hasNext).to eq true
       end
 
       it "returns false if the iterator contains all edges not of type nil" do
-        iterator = DataIterator.new(@graph.edges(), "foo", true, true)
+        iterator = DataIterator.new(*edges, "foo", true, true)
         expect(iterator.hasNext).to eq false
       end
     end
@@ -108,15 +115,15 @@ describe "DataIterator" do
 
       context "when asked for data of source vertex" do
         it "returns the data of the source of the edge" do
-          iterator = DataIterator.new(@graph.edges(), "foo", true, false)
-          expect([1, 2]).to include iterator.next
+          iterator = DataIterator.new(*edges, "foo", true, false)
+          expect([one, two]).to include iterator.next
         end
       end
 
       context "when asked for data of destination vertex" do
         it "returns the data of the destination of the edge" do
-          iterator = DataIterator.new(@graph.edges(), "foo", false, false)
-          expect([2, 3]).to include iterator.next
+          iterator = DataIterator.new(*edges, "foo", false, false)
+          expect([two, three]).to include iterator.next
         end
       end
     end
@@ -128,12 +135,12 @@ describe "DataIterator" do
       end
 
       it "throws NoSuchElementException for source data" do
-        iterator = DataIterator.new(@empty_graph.edges(), "foo", true, false)
+        iterator = DataIterator.new(@empty_graph.edges.to_array, 0, "foo", true, false)
         expect { iterator.next }.to raise_error NoSuchElementException
       end
 
       it "throws NoSuchElementException for destination data" do
-        iterator = DataIterator.new(@empty_graph.edges(), "foo", false, false)
+        iterator = DataIterator.new(@empty_graph.edges.to_array, 0, "foo", false, false)
         expect { iterator.next }.to raise_error NoSuchElementException
       end
     end
@@ -142,7 +149,7 @@ describe "DataIterator" do
   describe "remove" do
 
     it "throws UnsupportedOperationException exception" do
-      iterator = DataIterator.new(@graph.edges(), "foo", true, false)
+      iterator = DataIterator.new(graph.edges.to_array, 0, "foo", true, false)
       expect { iterator.remove }.to raise_error Java::JavaLang::UnsupportedOperationException
     end
   end

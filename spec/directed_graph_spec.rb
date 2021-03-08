@@ -1,89 +1,101 @@
 require 'dirgra-0.3.jar'
 import 'org.jruby.dirgra.DirectedGraph'
 
+require 'vertex_id_helper'
+
 # This is spec for Directed Graph Library
 
 describe "Directed Graph Utility" do
 
+  let(:graph) { DirectedGraph.new }
+  let(:one) { VertexID.new(1) }
+  let(:two) { VertexID.new(2) }
+  let(:three) { VertexID.new(3) }
+  let(:four) { VertexID.new(4) }
+  let(:five) { VertexID.new(5) }
+  let(:six) { VertexID.new(6) }
+  let(:hundred) { VertexID.new(100) }
+  let(:foo) { VertexID.new("foo") }
+  let(:bar) { VertexID.new("bar") }
+
   before do
-    @graph = DirectedGraph.new
+    @edge_count = 0
   end
 
   it "adds an edge to newly created graph" do
-    @graph.edges.size.should be 0
-    @graph.addEdge(1,2,'foo')
-    @graph.addEdge(4,5,'bar')
-    @graph.edges.size.should be 2
+    expect(graph.edges.size).to eq 0
+    add_edge(one,two,'foo')
+    add_edge(four,five,'bar')
+    expect(graph.edges.size).to eq 2
   end
 
   it "removes an existing edge from a graph" do
-    @graph.addEdge(1,2,'foo')
-    @graph.addEdge(4,5,'bar')
-    @graph.removeEdge(4,5)
-    @graph.edges.size.should be 1
-    @graph.removeEdge(@graph.edges.to_a.last)
-    @graph.edges.size.should be 0
+    add_edge(one,two,'foo')
+    add_edge(four,five,'bar')
+    remove_edge(four,five)
+    expect(graph.edges.size).to eq 1
+    graph.removeEdge(graph.edges.to_a.last)
+    expect(graph.edges.size).to eq 0
   end
 
   it "does not delete a non-existent edge from the graph" do
-    @graph.removeEdge(2,1)
-    @graph.edges.size.should be 0
+    remove_edge(two,one)
+    expect(graph.edges.size).to eq 0
   end
 
   it "removes a vertex and its associated edges" do
-    @graph.removeVertexFor(3)
-    @graph.vertices.size.should be 0
-    @graph.addEdge(1,2,'foo')
-    @graph.addEdge(4,5,'bar')
-    @graph.removeVertexFor(2)
-    @graph.vertices.size.should be 3
-    @graph.edges.size.should be 1
+    graph.removeVertexFor(three)
+    expect(graph.vertices.size).to eq 0
+    add_edge(one,two,'foo')
+    add_edge(four,five,'bar')
+    graph.removeVertexFor(two)
+    expect(graph.vertices.size).to eq 3
+    expect(graph.edges.size).to eq 1
   end
 
   it "gives vertex for given data" do
-    @graph.addEdge(1,2,'foo')
-    @graph.findOrCreateVertexFor(2).getData().should be 2
+    add_edge(one,two,'foo')
+    expect(graph.findOrCreateVertexFor(two).getData()).to eq two
   end
 
   it "creates a new vertex if it is not present" do
-    @graph.findOrCreateVertexFor(100).getData().should be 100
+    expect(graph.findOrCreateVertexFor(hundred).getData()).to eq hundred
   end
 
   it "finds already existing vertex" do
-    @graph.findVertexFor(100).should be_nil
-    @graph.addEdge(1,2,'foo')
-    @graph.findVertexFor(1).getData().should be 1
+    expect(graph.findVertexFor(hundred)).to eq nil
+    add_edge(one,two,'foo')
+    expect(graph.findVertexFor(one).getData()).to eq one
   end
 
   it "gives correct size of graph" do
-    @graph.removeEdge(1,2)
-    @graph.size.should be 0
-    @graph.addEdge(5,6,'baz')
-    @graph.size.should be 2
-    @graph.addEdge('foo','bar','baz')
-    @graph.size.should be 4
+    remove_edge(one,two)
+    expect(graph.size).to eq 0
+    add_edge(five,six,'baz')
+    expect(graph.size).to eq 2
+    add_edge(foo,bar,'baz')
+    expect(graph.size).to eq 4
   end
 
   it "gives all data in the graph" do
-    @graph.allData.size.should be 0
-    @graph.addEdge(1,2,'baz')
-    @graph.allData.each do |key|
-      @graph.findVertexFor(key).should_not be_nil
+    expect(graph.allData.size).to eq 0
+    add_edge(one,two,'baz')
+    graph.allData.each do |key|
+      expect(graph.findVertexFor(key)).to_not eq nil
     end
-    @graph.removeVertexFor(1)
-    @graph.allData.each do |key|
-      @graph.findVertexFor(key).should_not be_nil
+    graph.removeVertexFor(one)
+    graph.allData.each do |key|
+      expect(graph.findVertexFor(key)).to_not eq nil
     end
   end
 
   it "gives data in the graph in the order in which it was inserted" do
-    @graph.getInorderData.to_a.size.should be 0
-    @graph.findOrCreateVertexFor(1)
-    @graph.getInorderData.to_a.should eq [1]
-    @graph.addEdge('foo','bar','baz')
-    @graph.getInorderData.to_a.should eq [1,'foo','bar']
-    @graph.removeVertexFor('foo')
-    @graph.getInorderData.to_a.should eq [1,'bar']
+    expect(graph.getInorderData.to_a.size).to eq 0
+    graph.findOrCreateVertexFor(one)
+    expect(graph.getInorderData.to_a).to eq [one]
+    add_edge(foo,bar,'baz')
+    expect(graph.getInorderData.to_a).to eq [one,foo,bar]
+    graph.removeVertexFor(foo)
+    expect(graph.getInorderData.to_a).to eq [one,bar]
   end
-
 end
