@@ -107,6 +107,9 @@ public class DirectedGraph<T extends ExplicitVertexID> {
     }
 
     /**
+     * Find existing vertex and if it is not present create it.
+     * 
+     * @param data to find a vertex for
      * @return vertex for given data. If vertex is not present it creates vertex and returns it.
      */
     public Vertex<T> findOrCreateVertexFor(T data) {
