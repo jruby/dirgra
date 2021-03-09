@@ -17,8 +17,8 @@
   </parent>
 
   <scm>
-    <connection>scm:git:git://github.com/jruby/dirgra.git</connection>
-    <developerConnection>scm:git:git://github.com/jruby/dirgra.git</developerConnection>
+    <connection>scm:git:https://github.com/jruby/dirgra.git</connection>
+    <developerConnection>scm:git:https://github.com/jruby/dirgra.git</developerConnection>
     <url>http://github.com/jruby/dirgra</url>
   </scm>
 
