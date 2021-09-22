@@ -1,2 +1,0 @@
-Implementation-Title: Dirgra (Simple Directed Graph)
-Implementation-Version: 0.1
