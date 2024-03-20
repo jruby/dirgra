@@ -5,15 +5,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class EdgeTypeIterator<T extends ExplicitVertexID> implements Iterator<Edge<T>> {
-    private Edge<T>[] edges;
+public class EdgeTypeIterator<T extends ExplicitVertexID, U> implements Iterator<Edge<T, U>> {
+    private Edge<T, U>[] edges;
     private int edgesLength;
     private int edgeIteratorIndex = 0;
     private Object type;
     private Edge nextEdge = null;
     private boolean negate;
 
-    public EdgeTypeIterator(Edge<T>[] edges, int edgesLength, Object type, boolean negate) {
+    public EdgeTypeIterator(Edge<T, U>[] edges, int edgesLength, Object type, boolean negate) {
         this.edges = edges;
         this.edgesLength = edgesLength;
         this.type = type;
@@ -48,9 +48,9 @@ public class EdgeTypeIterator<T extends ExplicitVertexID> implements Iterator<Ed
     }
 
     @Override
-    public Edge<T> next() {
+    public Edge<T, U> next() {
         if (hasNext()) {
-            Edge<T> tmp = nextEdge;
+            Edge<T, U> tmp = nextEdge;
             nextEdge = null;
             return tmp;
         }

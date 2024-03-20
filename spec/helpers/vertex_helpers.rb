@@ -1,4 +1,4 @@
-import 'org.jruby.dirgra.Vertex'
+java_import 'org.jruby.dirgra.Vertex'
 
 class DegreeMatcher
 

@@ -26,5 +26,5 @@ def remove_edge(vertex1, vertex2)
 end
 
 def edges
-  [graph.edges.to_array, @edge_count]
+  [graph.edges.to_a, @edge_count]
 end

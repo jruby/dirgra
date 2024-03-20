@@ -1,13 +1,13 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + "/helpers"
 
-require 'dirgra-0.3.jar'
+require 'dirgra-0.5-SNAPSHOT.jar'
 
-require 'edge_helpers'
-require 'vertex_id_helper'
+require_relative 'helpers/edge_helpers'
+require_relative 'helpers/vertex_id_helper'
 
-import 'org.jruby.dirgra.DirectedGraph'
-import 'org.jruby.dirgra.EdgeTypeIterator'
-import 'java.util.NoSuchElementException'
+java_import 'org.jruby.dirgra.DirectedGraph'
+java_import 'org.jruby.dirgra.EdgeTypeIterator'
+java_import 'java.util.NoSuchElementException'
 
 describe "EdgeTypeIterable" do
 
@@ -125,7 +125,7 @@ describe "EdgeTypeIterable" do
     context "when the iterator does not have next edge" do
       it "throws NoSuchElementException" do
         empty_graph = DirectedGraph.new
-        iterator = EdgeTypeIterator.new(empty_graph.edges().to_array(), 0, "foo", false)
+        iterator = EdgeTypeIterator.new(empty_graph.edges.to_a, 0, "foo", false)
         expect { iterator.next }.to raise_error NoSuchElementException
       end
     end

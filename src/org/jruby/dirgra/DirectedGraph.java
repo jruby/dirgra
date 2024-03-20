@@ -7,28 +7,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DirectedGraph<T extends ExplicitVertexID> {
-    private static int INITIAL_SIZE = 4;
+public class DirectedGraph<T extends ExplicitVertexID, U> {
+    private static final int INITIAL_SIZE = 4;
 
-    private Map<T, Vertex<T>> vertices = new HashMap<T, Vertex<T>>();
-    private Edge<T>[] edges = new Edge[INITIAL_SIZE];
+    private final Map<T, Vertex<T, U>> vertices = new HashMap<>();
+    private Edge<T, U>[] edges = new Edge[INITIAL_SIZE];
     private int edgeLength = 0;
     private ArrayList inOrderVerticeData = new ArrayList();
     int vertexIDCounter = 0;
 
-    protected Edge<T>[] growEdges(Edge<T>[] array, int realLength) {
+    protected Edge<T, U>[] growEdges(Edge<T, U>[] array, int realLength) {
         int newLength = array.length == 0 ? 2 : array.length * 2;
-        Edge<T>[] newEdges = new Edge[newLength];
+        Edge<T, U>[] newEdges = new Edge[newLength];
 
         System.arraycopy(array, 0, newEdges, 0, realLength);
         return newEdges;
     }
 
-    protected Edge<T>[] getEdges() {
+    protected Edge<T, U>[] getEdges() {
         return edges;
     }
 
-    protected Edge<T> addEdge(Edge<T> newEdge) {
+    protected Edge<T, U> addEdge(Edge<T, U> newEdge) {
         for (int i = 0; i < edgeLength; i++) {
             // Edge already added.  No repeated edge support.
             if (edges[i].equals(newEdge)) return newEdge;
@@ -40,7 +40,7 @@ public class DirectedGraph<T extends ExplicitVertexID> {
         return newEdge;
     }
 
-    public void removeEdge(Edge<T> edge) {
+    public void removeEdge(Edge<T, U> edge) {
         int splitPoint = -1;
 
         for (int i = 0; i < edgeLength; i++) {
@@ -51,7 +51,7 @@ public class DirectedGraph<T extends ExplicitVertexID> {
         }
 
         if (splitPoint != -1) {
-            Edge<T> edgeToRemove = edges[splitPoint];
+            Edge<T, U> edgeToRemove = edges[splitPoint];
             if (splitPoint < edgeLength - 1) { // somewhere between index 0 and edgeLength-2
                 System.arraycopy(edges, splitPoint + 1, edges, splitPoint, edgeLength - 1 - splitPoint);
             }
@@ -64,16 +64,16 @@ public class DirectedGraph<T extends ExplicitVertexID> {
         }
     }
 
-    public Collection<Vertex<T>> vertices() {
+    public Collection<Vertex<T, U>> vertices() {
         return vertices.values();
     }
 
-    public Collection<Edge<T>> edges() {
+    public Collection<Edge<T, U>> edges() {
         return Arrays.asList(Arrays.copyOf(edges, edgeLength));
     }
 
-    public Iterable<Edge<T>> edgesOfType(Object type) {
-        return new EdgeTypeIterable<T>(edges, edgeLength, type);
+    public Iterable<Edge<T, U>> edgesOfType(U type) {
+        return new EdgeTypeIterable<T, U>(edges, edgeLength, type);
     }
 
     public Collection<T> allData() {
@@ -87,7 +87,7 @@ public class DirectedGraph<T extends ExplicitVertexID> {
         return inOrderVerticeData;
     }
 
-    public void addEdge(T source, T destination, Object type) {
+    public void addEdge(T source, T destination, U type) {
         findOrCreateVertexFor(source).addEdgeTo(destination, type);
     }
 
@@ -102,7 +102,7 @@ public class DirectedGraph<T extends ExplicitVertexID> {
         }
     }
 
-    public Vertex<T> findVertexFor(T data) {
+    public Vertex<T, U> findVertexFor(T data) {
         return vertices.get(data);
     }
 
@@ -112,7 +112,7 @@ public class DirectedGraph<T extends ExplicitVertexID> {
      * @param data to find a vertex for
      * @return vertex for given data. If vertex is not present it creates vertex and returns it.
      */
-    public Vertex<T> findOrCreateVertexFor(T data) {
+    public Vertex<T, U> findOrCreateVertexFor(T data) {
         Vertex vertex = vertices.get(data);
 
         if (vertex != null) return vertex;
@@ -145,9 +145,9 @@ public class DirectedGraph<T extends ExplicitVertexID> {
     public String toString() {
         StringBuilder buf = new StringBuilder();
 
-        ArrayList<Vertex<T>> verts = new ArrayList<Vertex<T>>(vertices.values());
+        ArrayList<Vertex<T, U>> verts = new ArrayList<>(vertices.values());
         Collections.sort(verts);
-        for (Vertex<T> vertex: verts) {
+        for (Vertex<T, U> vertex: verts) {
             buf.append(vertex);
         }
 

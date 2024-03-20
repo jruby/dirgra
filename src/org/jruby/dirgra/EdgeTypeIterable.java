@@ -4,18 +4,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class EdgeTypeIterable<T extends ExplicitVertexID> implements Iterable<Edge<T>> {
-    private Edge<T>[] edges;
+public class EdgeTypeIterable<T extends ExplicitVertexID, U> implements Iterable<Edge<T, U>> {
+    private Edge<T, U>[] edges;
     int edgesLength;
     private Object type;
     private boolean negate;
 
-    public EdgeTypeIterable(Edge<T>[] edges, int edgesLength, Object type) {
+    public EdgeTypeIterable(Edge<T, U>[] edges, int edgesLength, U type) {
         this(edges, edgesLength, type, false);
 
     }
 
-    public EdgeTypeIterable(Edge<T>[] edges, int edgesLength, Object type, boolean negate) {
+    public EdgeTypeIterable(Edge<T, U>[] edges, int edgesLength, U type, boolean negate) {
         this.edges = edges;
         this.edgesLength = edgesLength;
         this.type = type;
@@ -23,7 +23,7 @@ public class EdgeTypeIterable<T extends ExplicitVertexID> implements Iterable<Ed
     }
 
     @Override
-    public Iterator<Edge<T>> iterator() {
-        return new EdgeTypeIterator<T>(edges, edgesLength, type, negate);
+    public Iterator<Edge<T, U>> iterator() {
+        return new EdgeTypeIterator<T, U>(edges, edgesLength, type, negate);
     }
 }

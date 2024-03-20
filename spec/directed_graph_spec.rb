@@ -1,7 +1,7 @@
-require 'dirgra-0.3.jar'
-import 'org.jruby.dirgra.DirectedGraph'
+require 'dirgra-0.5-SNAPSHOT.jar'
+java_import 'org.jruby.dirgra.DirectedGraph'
 
-require 'vertex_id_helper'
+require_relative 'helpers/vertex_id_helper'
 
 # This is spec for Directed Graph Library
 

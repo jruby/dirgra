@@ -1,8 +1,6 @@
 require 'java'
 
-require 'dirgra-0.3.jar'
-
-import 'org.jruby.dirgra.Edge'
+java_import 'org.jruby.dirgra.Edge'
 
 class EdgeType
 

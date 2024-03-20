@@ -11,13 +11,13 @@ import java.util.List;
 /**
  *
  */
-public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>> {
+public class Vertex<T extends ExplicitVertexID, U> implements Comparable<Vertex<T, U>> {
     private static final Edge[] EMPTY_EDGE_LIST = new Edge[0];
     private DirectedGraph graph;
     private T data;
-    private Edge<T>[] incoming = EMPTY_EDGE_LIST;
+    private Edge<T, U>[] incoming = EMPTY_EDGE_LIST;
     private int incomingLength = 0;
-    private Edge<T>[] outgoing = EMPTY_EDGE_LIST;
+    private Edge<T, U>[] outgoing = EMPTY_EDGE_LIST;
     private int outgoingLength = 0;
     int id;
 
@@ -31,8 +31,8 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         addEdgeTo(destination, null);
     }
 
-    public void addEdgeTo(Vertex destination, Object type) {
-        Edge<T> newEdge = graph.addEdge(new Edge<T>(this, destination, type));
+    public void addEdgeTo(Vertex destination, U type) {
+        Edge<T, U> newEdge = graph.addEdge(new Edge<T, U>(this, destination, type));
         addOutgoingEdge(newEdge);
         destination.addIncomingEdge(newEdge);
     }
@@ -41,7 +41,7 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         addEdgeTo(destination, null);
     }
 
-    public void addEdgeTo(T destination, Object type) {
+    public void addEdgeTo(T destination, U type) {
         Vertex destinationVertex = graph.findOrCreateVertexFor(destination);
 
         addEdgeTo(destinationVertex, type);
@@ -59,7 +59,7 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         return false;
     }
 
-    protected void addOutgoingEdge(Edge<T> newEdge) {
+    protected void addOutgoingEdge(Edge<T, U> newEdge) {
         for (int i = 0; i < outgoingLength; i++) {
             // Edge already added.  No repeated edge support.
             if (outgoing[i].equals(newEdge)) return;
@@ -70,7 +70,7 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         outgoing[outgoingLength++] = newEdge;
     }
 
-    protected void addIncomingEdge(Edge<T> newEdge) {
+    protected void addIncomingEdge(Edge<T, U> newEdge) {
         for (int i = 0; i < incomingLength; i++) {
             // Edge already added.  No repeated edge support.
             if (incoming[i] == newEdge) return;
@@ -81,7 +81,7 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         incoming[incomingLength++] = newEdge;
     }
 
-    protected void removeOutgoingEdge(Edge<T> edge) {
+    protected void removeOutgoingEdge(Edge<T, U> edge) {
         int splitIndex = -1; // which index we found the edge at
 
         for (int i = 0; i < outgoingLength; i++) {
@@ -100,7 +100,7 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         outgoingLength--;                       // list is one smaller
     }
 
-    protected void removeIncomingEdge(Edge<T> edge) {
+    protected void removeIncomingEdge(Edge<T, U> edge) {
         int splitIndex = -1; // which index we found the edge at
 
         for (int i = 0; i < incomingLength; i++) {
@@ -148,95 +148,95 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         return outgoingLength;
     }
 
-    public Iterable<Edge<T>> getIncomingEdgesOfType(Object type) {
-        return new EdgeTypeIterable<T>(incoming, incomingLength, type);
+    public Iterable<Edge<T, U>> getIncomingEdgesOfType(U type) {
+        return new EdgeTypeIterable<>(incoming, incomingLength, type);
     }
 
-    public Iterable<Edge<T>> getIncomingEdgesNotOfType(Object type) {
-        return new EdgeTypeIterable<T>(incoming, incomingLength, type, true);
+    public Iterable<Edge<T, U>> getIncomingEdgesNotOfType(U type) {
+        return new EdgeTypeIterable<>(incoming, incomingLength, type, true);
     }
 
-    public Iterable<Edge<T>> getOutgoingEdgesOfType(Object type) {
-        return new EdgeTypeIterable<T>(outgoing, outgoingLength, type);
+    public Iterable<Edge<T, U>> getOutgoingEdgesOfType(U type) {
+        return new EdgeTypeIterable<>(outgoing, outgoingLength, type);
     }
 
     public T getIncomingSourceData() {
-        Edge<T> edge = getFirstEdge(getIncomingEdges().iterator());
+        Edge<T, U> edge = getFirstEdge(getIncomingEdges().iterator());
 
         return edge == null ? null : edge.getSource().getData();
     }
 
-    public T getIncomingSourceDataOfType(Object type) {
-        Edge<T> edge = getFirstEdge(getIncomingEdgesOfType(type).iterator());
+    public T getIncomingSourceDataOfType(U type) {
+        Edge<T, U> edge = getFirstEdge(getIncomingEdgesOfType(type).iterator());
 
         return edge == null ? null : edge.getSource().getData();
     }
 
     public Iterable<T> getIncomingSourcesData() {
-        return new DataIterable<T>(incoming, incomingLength, null, true, true);
+        return new DataIterable<T, U>(incoming, incomingLength, null, true, true);
     }
 
-    public Iterable<T> getIncomingSourcesDataOfType(Object type) {
-        return new DataIterable<T>(incoming, incomingLength, type, true, false);
+    public Iterable<T> getIncomingSourcesDataOfType(U type) {
+        return new DataIterable<>(incoming, incomingLength, type, true, false);
     }
 
-    public Iterable<T> getIncomingSourcesDataNotOfType(Object type) {
-        return new DataIterable<T>(incoming, incomingLength, type, true, true);
+    public Iterable<T> getIncomingSourcesDataNotOfType(U type) {
+        return new DataIterable<>(incoming, incomingLength, type, true, true);
     }
 
-    public Iterable<Edge<T>> getOutgoingEdgesNotOfType(Object type) {
-        return new EdgeTypeIterable<T>(outgoing, outgoingLength, type, true);
+    public Iterable<Edge<T, U>> getOutgoingEdgesNotOfType(U type) {
+        return new EdgeTypeIterable<T, U>(outgoing, outgoingLength, type, true);
     }
 
     public Iterable<T> getOutgoingDestinationsData() {
-        return new DataIterable<T>(outgoing, outgoingLength, null, false, true);
+        return new DataIterable<T, U>(outgoing, outgoingLength, null, false, true);
     }
 
     public Iterable<T> getOutgoingDestinationsDataOfType(Object type) {
-        return new DataIterable<T>(outgoing, outgoingLength, type, false, false);
+        return new DataIterable<T, U>(outgoing, outgoingLength, type, false, false);
     }
 
     public Iterable<T> getOutgoingDestinationsDataNotOfType(Object type) {
-        return new DataIterable<T>(outgoing, outgoingLength, type, false, true);
+        return new DataIterable<T, U>(outgoing, outgoingLength, type, false, true);
     }
 
     public T getOutgoingDestinationData() {
-        Edge<T> edge = getFirstEdge(getOutgoingEdges().iterator());
+        Edge<T, U> edge = getFirstEdge(getOutgoingEdges().iterator());
 
         return edge == null ? null : edge.getDestination().getData();
     }
 
-    public T getOutgoingDestinationDataOfType(Object type) {
-        Edge<T> edge = getFirstEdge(getOutgoingEdgesOfType(type).iterator());
+    public T getOutgoingDestinationDataOfType(U type) {
+        Edge<T, U> edge = getFirstEdge(getOutgoingEdgesOfType(type).iterator());
 
         return edge == null ? null : edge.getDestination().getData();
     }
 
-    private Edge<T> getFirstEdge(Iterator<Edge<T>> iterator) {
+    private Edge<T, U> getFirstEdge(Iterator<Edge<T, U>> iterator) {
         return iterator.hasNext() ? iterator.next() : null;
     }
 
-    public Edge<T> getIncomingEdgeOfType(Object type) {
+    public Edge<T, U> getIncomingEdgeOfType(U type) {
         return getFirstEdge(getIncomingEdgesOfType(type).iterator());
     }
 
-    public Edge<T> getOutgoingEdgeOfType(Object type) {
+    public Edge<T, U> getOutgoingEdgeOfType(U type) {
         return getFirstEdge(getOutgoingEdgesOfType(type).iterator());
     }
 
-    public Edge<T> getIncomingEdge() {
+    public Edge<T, U> getIncomingEdge() {
         return getFirstEdge(getIncomingEdgesNotOfType(null).iterator());
     }
 
-    public Edge<T> getOutgoingEdge() {
+    public Edge<T, U> getOutgoingEdge() {
         return getFirstEdge(getOutgoingEdgesNotOfType(null).iterator());
     }
 
-    public Collection<Edge<T>> getIncomingEdges() {
+    public Collection<Edge<T, U>> getIncomingEdges() {
         return Arrays.asList(Arrays.copyOf(incoming, incomingLength));
     }
 
-    public Collection<Edge<T>> getOutgoingEdges() {
+    public Collection<Edge<T, U>> getOutgoingEdges() {
         return Arrays.asList(Arrays.copyOf(outgoing, outgoingLength));
     }
 
@@ -256,13 +256,13 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
 
         buf.append(":");
 
-        Collection<Edge<T>> edges = getOutgoingEdges();
+        Collection<Edge<T, U>> edges = getOutgoingEdges();
         int size = edges.size();
 
         if (size > 0) {
             found = true;
             buf.append(">[");
-            List<Edge<T>> e = new ArrayList<Edge<T>>(edges);
+            List<Edge<T, U>> e = new ArrayList<>(edges);
             Collections.sort(e, new DestinationCompare());
 
             for (int i = 0; i < size - 1; i++) {
@@ -277,7 +277,7 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         if (size > 0) {
             if (found) buf.append(", ");
             buf.append("<[");
-            List<Edge<T>> e = new ArrayList<Edge<T>>(edges);
+            List<Edge<T, U>> e = new ArrayList<>(edges);
             Collections.sort(e, new SourceCompare());
 
             for (int i = 0; i < size - 1; i++) {
@@ -291,15 +291,15 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
     }
 
     @Override
-    public int compareTo(Vertex<T> that) {
+    public int compareTo(Vertex<T, U> that) {
         if (getID() == that.getID()) return 0;
         if (getID() < that.getID()) return -1;
         return 1;
     }
 
-    class SourceCompare implements Comparator<Edge<T>> {
+    class SourceCompare implements Comparator<Edge<T, U>> {
         @Override
-        public int compare(Edge<T> o1, Edge<T> o2) {
+        public int compare(Edge<T, U> o1, Edge<T, U> o2) {
             int i1 = o1.getSource().getID();
             int i2 = o2.getSource().getID();
 
@@ -308,9 +308,9 @@ public class Vertex<T extends ExplicitVertexID> implements Comparable<Vertex<T>>
         }
     }
 
-    class DestinationCompare implements Comparator<Edge<T>> {
+    class DestinationCompare implements Comparator<Edge<T, U>> {
         @Override
-        public int compare(Edge<T> o1, Edge<T> o2) {
+        public int compare(Edge<T, U> o1, Edge<T, U> o2) {
             int i1 = o1.getDestination().getID();
             int i2 = o2.getDestination().getID();
 

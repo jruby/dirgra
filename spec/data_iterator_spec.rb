@@ -1,9 +1,9 @@
-require 'dirgra-0.3.jar'
-import 'org.jruby.dirgra.DirectedGraph'
-import 'org.jruby.dirgra.DataIterator'
-import 'java.util.NoSuchElementException'
+require 'dirgra-0.5-SNAPSHOT.jar'
+java_import 'org.jruby.dirgra.DirectedGraph'
+java_import 'org.jruby.dirgra.DataIterator'
+java_import 'java.util.NoSuchElementException'
 
-require 'vertex_id_helper'
+require_relative 'helpers/vertex_id_helper'
 
 describe "DataIterator" do
   let(:graph) { DirectedGraph.new }
@@ -135,12 +135,12 @@ describe "DataIterator" do
       end
 
       it "throws NoSuchElementException for source data" do
-        iterator = DataIterator.new(@empty_graph.edges.to_array, 0, "foo", true, false)
+        iterator = DataIterator.new(@empty_graph.edges.to_a, 0, "foo", true, false)
         expect { iterator.next }.to raise_error NoSuchElementException
       end
 
       it "throws NoSuchElementException for destination data" do
-        iterator = DataIterator.new(@empty_graph.edges.to_array, 0, "foo", false, false)
+        iterator = DataIterator.new(@empty_graph.edges.to_a, 0, "foo", false, false)
         expect { iterator.next }.to raise_error NoSuchElementException
       end
     end
@@ -149,7 +149,7 @@ describe "DataIterator" do
   describe "remove" do
 
     it "throws UnsupportedOperationException exception" do
-      iterator = DataIterator.new(graph.edges.to_array, 0, "foo", true, false)
+      iterator = DataIterator.new(graph.edges.to_a, 0, "foo", true, false)
       expect { iterator.remove }.to raise_error Java::JavaLang::UnsupportedOperationException
     end
   end
