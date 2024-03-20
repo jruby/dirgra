@@ -1,13 +1,13 @@
-= Simple Directed Graph Implementation
+# Dirgra: Simple Directed Graph
 
 
-= Building
+## Building
 
 ```text
 % mvn package
 ```
 
-= Testing
+## Testing
 
 ```text
 % jruby -Itarget rspec
