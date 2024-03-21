@@ -1,3 +1,4 @@
+require_relative 'load_dirgra'
 
 class VertexID
   include org.jruby.dirgra.ExplicitVertexID

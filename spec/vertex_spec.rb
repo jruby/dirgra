@@ -1,8 +1,5 @@
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/helpers"
-
-require 'dirgra-0.5-SNAPSHOT.jar'
-require 'vertex_helpers'
-require 'edge_helpers'
+require_relative 'helpers/vertex_helpers'
+require_relative 'helpers/edge_helpers'
 
 java_import 'org.jruby.dirgra.DirectedGraph'
 java_import 'org.jruby.dirgra.Vertex'

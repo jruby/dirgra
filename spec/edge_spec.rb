@@ -1,10 +1,8 @@
-require 'dirgra-0.5-SNAPSHOT.jar'
+require_relative 'helpers/vertex_id_helper'
 
 java_import 'org.jruby.dirgra.Edge'
 java_import 'org.jruby.dirgra.Vertex'
 java_import 'org.jruby.dirgra.DirectedGraph'
-
-require_relative 'helpers/vertex_id_helper'
 
 describe "Edge" do
 

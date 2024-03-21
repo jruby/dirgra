@@ -10,5 +10,5 @@
 ## Testing
 
 ```text
-% jruby -Itarget rspec
+% jruby -S rspec
 ```

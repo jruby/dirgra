@@ -1,9 +1,9 @@
-require 'dirgra-0.5-SNAPSHOT.jar'
+require_relative 'helpers/vertex_id_helper'
+
 java_import 'org.jruby.dirgra.DirectedGraph'
 java_import 'org.jruby.dirgra.DataIterator'
 java_import 'java.util.NoSuchElementException'
 
-require_relative 'helpers/vertex_id_helper'
 
 describe "DataIterator" do
   let(:graph) { DirectedGraph.new }

@@ -1,3 +1,5 @@
+require_relative 'load_dirgra'
+
 java_import 'org.jruby.dirgra.Vertex'
 
 class DegreeMatcher
