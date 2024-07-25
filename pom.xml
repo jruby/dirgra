@@ -4,7 +4,7 @@
   <groupId>org.jruby</groupId>
   <artifactId>dirgra</artifactId>
   <packaging>jar</packaging>
-  <version>0.6-SNAPSHOT</version>
+  <version>0.6</version>
   <name>Dirgra</name>
   <url>https://github.com/jruby/dirgra</url>
   <description>Simple Directed Graph</description>
@@ -19,7 +19,7 @@
     <connection>scm:git:https://github.com/jruby/dirgra.git</connection>
     <developerConnection>scm:git:git@github.com:jruby/dirgra.git</developerConnection>
     <url>https://github.com/jruby/dirgra</url>
-    <tag>HEAD</tag>
+    <tag>dirgra-0.6</tag>
   </scm>
 
   <licenses>
